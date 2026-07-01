@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
@@ -67,7 +67,8 @@ const scaleIn = {
     }
 } as const
 
-export default function OrderConfirmationPage() {
+// Inner component that uses useSearchParams
+function OrderConfirmationContent() {
     const searchParams = useSearchParams()
     const orderNumber = searchParams.get('order_number')
     const supabase = createClient()
@@ -407,5 +408,20 @@ export default function OrderConfirmationPage() {
                 </motion.div>
             </div>
         </div>
+    )
+}
+
+// Main page component with Suspense boundary
+export default function OrderConfirmationPage() {
+    return (
+        <Suspense
+            fallback={
+                <div className="min-h-screen flex items-center justify-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+            }
+        >
+            <OrderConfirmationContent />
+        </Suspense>
     )
 }
